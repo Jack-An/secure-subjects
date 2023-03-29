@@ -35,7 +35,7 @@
 								</view>
 							</view>
 							<view class="" v-if="item.type == 3">
-								<view :class="changeAnswer(item2.status)" v-for="(item2, i2) in item.questionAnswerList"
+								<view :class="[changeAnswer(item2.status)]" v-for="(item2, i2) in item.questionAnswerList"
 									:key="i2" @click="changeOptions(i2)">
 									<view class="order" style="float: left;">{{ i2 == 0 ? 'A' : 'B' }}.</view>
 									<view class="answer_detail">{{ i2 == 0 ? '正确' : '错误' }}</view>

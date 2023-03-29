@@ -24,7 +24,7 @@
 						<view class="answer">
 							<view class="" v-if="item.type==1||item.type==2">
 								<!-- answer_options_active -->
-								<view :class="changeAnswer(item2.status)" v-for="(item2,i2) in item.questionAnswerList"
+								<view :class="[changeAnswer(item2.status)]" v-for="(item2,i2) in item.questionAnswerList"
 									:key="i2" @click="changeOptions(i2)">
 									<view class="order" style="float: left;">
 										{{item2.answerTitle}}.
@@ -40,7 +40,7 @@
 							</view>
 							<view class="" v-if="item.type==3">
 								<!-- answer_options_active -->
-								<view :class="changeAnswer(item2.status)" v-for="(item2,i2) in item.questionAnswerList"
+								<view :class="[changeAnswer(item2.status)]" v-for="(item2,i2) in item.questionAnswerList"
 									:key="i2" @click="changeOptions(i2)">
 									<view class="order" style="float: left;">
 										{{i2==0?'A':'B'}}.
