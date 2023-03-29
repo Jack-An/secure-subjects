@@ -1,0 +1,56 @@
+[
+	{
+		"id": 1001,
+		"title": "单选题目AAA",
+		"type": 1,
+		"rightKey": "A",
+		"tag": "分类1",
+		"options": [
+			{
+				"title": "选项AAA",
+				"key": "A"
+			},
+			{
+				"title": "选项AAA",
+				"key": "B"
+			},
+			{
+				"title": "选项CCC",
+				"key": "C"
+			},
+			{
+				"title": "选项DDD",
+				"key": "D"
+			}
+		]
+		
+	},
+	{
+		"id": 1002,
+		"title": "多选题目测试2222",
+		"type": 2,
+		"rightKey": ["A", "B"],
+		"tag": "分类2",
+		"options": [
+			{
+				"title": "选项AAA",
+				"key": "A"
+			},
+			{
+				"title": "选项AAA",
+				"key": "B"
+			},
+			{
+				"title": "选项CCC",
+				"key": "C"
+			},
+			{
+				"title": "选项DDD",
+				"key": "D"
+			}
+		]
+	},
+	{
+		""
+	}
+]
