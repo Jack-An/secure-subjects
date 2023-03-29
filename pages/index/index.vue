@@ -6,21 +6,21 @@
 		</view>
 		<u-navbar :title="title" safeAreaInsetTop fixed placeholder :is-back="false" :autoBack="true"
 			:background="top_bgCl" titleColor="#ffffff" :borderBottom="false" :select="true" backIconColor="#ffffff"
-			:changedata="changedata" @changetitle="changetitle" @pickershow="pickershow">
+			:changedata="changedata" @pickershow="pickershow">
 		</u-navbar>
 		<view class="page_content">
 			<view class="modular">
-<!-- 				<view class="modular_item" @click="runExam">
+        <view class="modular_item" @click="runExam">
 					<image src="../../static/examination_paper.png" mode=""></image>
-					<text>模拟考卷</text>
-				</view> -->
+					<text>顺序练习</text>
+				</view>
 				<view class="modular_item" @click="runExercise">
 					<image src="../../static/practice.png" mode=""></image>
-					<text>在线练习</text>
+					<text>模拟考试</text>
 				</view>
 				<view class="modular_item" @click="runFav">
 					<image src="../../static/favorites.png" mode=""></image>
-					<text>收藏夹</text>
+					<text>错题练习</text>
 				</view>
 			</view>
 			<view class="history_results">

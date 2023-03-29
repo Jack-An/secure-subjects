@@ -11,20 +11,14 @@
 				</view>
 				<view class="detail_right">
 					<view class="exam_title">
-						{{item.testpaperName}}
+						{{item.subjectType}}
 					</view>
 					<view class="pattern">
-						共<text>{{item.questionSum}}</text>道题
+						共<text>{{item.questionNum}}</text>道题
 					</view>
 					<view class="exam_btn">
-						<view class="start_exam" v-if="!item.exam" @click="runExam(item)">
-							开始考试
-						</view>
-						<view class="analysis" v-if="item.exam" @click="runExamReview(item)">
-							解析
-						</view>
-						<view class="retest" v-if="item.exam" @click="runExam(item)">
-							重考
+						<view class="start_exam" @click="runExam(item)">
+							开始练习
 						</view>
 					</view>
 				</view>
@@ -46,13 +40,16 @@
 				img:"../../static/exam_bg.png",
 				//题目列表数据
 				examList:[{
-					'testpaperName':"我是试卷一哦",
-					'questionSum':10,
-					'exam':1
+					'subjectType':"单选题",
+					'questionNum':10,
 				},{
-					'testpaperName':"我是试卷二哦",
-					'questionSum':15,
-				}],
+					'subjectType':"多选题",
+					'questionNum':15,
+				},
+          {
+            "subjectType": "案例题",
+            "questionNum": 10
+          }],
 			}			
 		},
 		mounted() {
