@@ -4,6 +4,71 @@ from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 
 
+class BaseParser:
+
+    @classmethod
+    def single_parser(cls, subject_rows):
+        first_line = subject_rows[0]
+        tag = first_line[1].value
+        title = first_line[3].value
+        answer = first_line[4].value
+        options = []
+        for option in subject_rows[1:]:
+            option_val = option[3].value
+            key = option_val[0]
+            text = option_val[2:]
+            options.append({"key": key, "option": text})
+        subject = {
+            "tag": tag,
+            "title": title,
+            "answer": answer,
+            "options": options
+        }
+        return subject
+
+    @classmethod
+    def multiple_parser(cls, subject_rows):
+        first_line = subject_rows[0]
+        tag = first_line[1].value
+        title = first_line[3].value
+        answer = first_line[4].value
+        answer = [val for val in answer]
+        options = []
+        for option in subject_rows[1:]:
+            option_val = option[3].value
+            key = option_val[0]
+            text = option_val[2:]
+            options.append({"key": key, "option": text})
+        subject = {
+            "tag": tag,
+            "title": title,
+            "answer": answer,
+            "options": options
+        }
+        return subject
+
+    @classmethod
+    def judge_parser(cls, subject_rows):
+        first_line = subject_rows[0]
+        tag = first_line[1].value
+        title = first_line[3].value
+        answer = first_line[4].value
+        options = []
+        for option in subject_rows[1:]:
+            option_val = option[3].value
+            key = option_val[0]
+            text = option_val[2:]
+            options.append({"key": key, "option": text})
+        subject = {
+            "tag": tag,
+            "title": title,
+            "answer": answer,
+            "options": options
+        }
+        return subject
+
+
+
 class SubjectParser:
 
     @classmethod
@@ -11,23 +76,7 @@ class SubjectParser:
         subjects = []
         for i in range(0, len(rows), 5):
             subject_rows = rows[i:i + 5]
-            first_line = subject_rows[0]
-            tag = first_line[1].value
-            title = first_line[3].value
-            answer = first_line[4].value
-            options = []
-            for option in subject_rows[1:]:
-                option_val = option[3].value
-                splits = option_val.split('.')
-                key = splits[0]
-                text = "".join(splits[1:])
-                options.append({"key": key, "option": text})
-            subject = {
-                "tag": tag,
-                "title": title,
-                "answer": answer,
-                "options": options
-            }
+            subject = BaseParser.single_parser(subject_rows)
             subjects.append(subject)
         return subjects
 
@@ -36,24 +85,7 @@ class SubjectParser:
         subjects = []
         for i in range(0, len(rows), 6):
             subject_rows = rows[i:i + 6]
-            first_line = subject_rows[0]
-            tag = first_line[1].value
-            title = first_line[3].value
-            answer = first_line[4].value
-            answer = [val for val in answer]
-            options = []
-            for option in subject_rows[1:]:
-                option_val = option[3].value
-                splits = option_val.split('.')
-                key = splits[0]
-                text = "".join(splits[1:])
-                options.append({"key": key, "option": text})
-            subject = {
-                "tag": tag,
-                "title": title,
-                "answer": answer,
-                "options": options
-            }
+            subject = BaseParser.multiple_parser(subject_rows)
             subjects.append(subject)
         return subjects
 
@@ -62,23 +94,7 @@ class SubjectParser:
         subjects = []
         for i in range(0, len(rows), 3):
             subject_rows = rows[i:i + 3]
-            first_line = subject_rows[0]
-            tag = first_line[1].value
-            title = first_line[3].value
-            answer = first_line[4].value
-            options = []
-            for option in subject_rows[1:]:
-                option_val = option[3].value
-                splits = option_val.split('.')
-                key = splits[0]
-                text = "".join(splits[1:])
-                options.append({"key": key, "option": text})
-            subject = {
-                "tag": tag,
-                "title": title,
-                "answer": answer,
-                "options": options
-            }
+            subject = BaseParser.judge_parser(subject_rows)
             subjects.append(subject)
         return subjects
 
@@ -90,36 +106,53 @@ class SubjectParser:
             if rows[i][0].value:
                 end_idx = i
                 subjects.append(rows[start_idx:end_idx])
-                start_idx = i + 1
-        subjects.append(rows[start_idx+1:])
+                start_idx = i
+        subjects.append(rows[start_idx:])
         return subjects
 
+    @classmethod
+    def _split_sample_sub_subjects(cls, rows):
+        subjects = []
+        start_idx = 0
+        for i in range(1, len(rows)):
+            if rows[i][2].value and rows[i][2].value.strip():
+                end_idx = i
+                subjects.append(rows[start_idx: end_idx])
+                start_idx = i
+        subjects.append(rows[start_idx:])
+        return subjects
 
     @classmethod
     def sample_subject_parser(cls, rows):
         subjects = []
-        for i in range(0, len(rows), 3):
-            subject_rows = rows[i:i + 3]
-            first_line = subject_rows[0]
+        _subjects = cls._split_sample_subjects(rows)
+        for _item in _subjects:
+            first_line = _item[0]
             tag = first_line[1].value
             title = first_line[3].value
-            answer = first_line[4].value
-            options = []
-            for option in subject_rows[1:]:
-                option_val = option[3].value
-                splits = option_val.split('.')
-                key = splits[0]
-                text = "".join(splits[1:])
-                options.append({"key": key, "option": text})
+            sub_rows = _item[1:]
+            sub_subjects = cls._split_sample_sub_subjects(sub_rows)
+            subs = []
+            for _sub in sub_subjects:
+                if len(_sub) == 3:
+                    _type = "judge"
+                    _sub_subject = BaseParser.judge_parser(_sub)
+                elif len(_sub) == 5:
+                    _type = "single"
+                    _sub_subject = BaseParser.single_parser(_sub)
+                else:
+                    _type = "multiple"
+                    _sub_subject = BaseParser.multiple_parser(_sub)
+                _sub_subject["type"] = _type
+                subs.append(_sub_subject)
+
             subject = {
-                "tag": tag,
                 "title": title,
-                "answer": answer,
-                "options": options
+                "tag": tag,
+                "subs": subs,
             }
             subjects.append(subject)
         return subjects
-
 
     @classmethod
     def clear_rows(cls, rows):
@@ -151,19 +184,10 @@ class SubjectParser:
             elif subject_key == "judge":
                 subjects = cls.judge_subject_parser(valid_rows)
             else:
-                subjects = cls._split_sample_subjects(valid_rows)
-                print("sample total", len(subjects))
-                print(subjects[-1])
-                subjects = []
+                subjects = cls.sample_subject_parser(valid_rows)
 
             with open(f'{subject_key}.json', 'w') as f:
                 json.dump(subjects, f)
-            # print(len(subjects))
-            # print(subjects[:3])
-
-
-
-
 
 
 
