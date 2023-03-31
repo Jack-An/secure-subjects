@@ -1,8 +1,7 @@
-<!-- 考试页 -->
 <template>
 	<view class="page_big" :style="{ height: screenheight + 'px' }">
 		<u-navbar
-			title="模拟考试"
+			title="专项练习"
 			safeAreaInsetTop
 			fixed
 			placeholder
@@ -13,16 +12,17 @@
 			backIconColor="#ffffff"
 			titleBold
 		></u-navbar>
-		<questionlist :style="{ height: screenheight-navbarHeight-75 + 'px' }" 
+		<questionlist :style="{ height: screenheight-navbarHeight-75 + 'px' }"
 		:exampagenum="exampagenum" :answerData="answerData" :startTime="60" :isRemaining="false" 
 		@changeQues="changeQues" @changeOptions="changeOptions" @collectChange="collectChange" 
-		@runRes="runRes" ></questionlist>
+		@runRes="runRes" class="question-content-wrapper"></questionlist>
 		
 	</view>
 </template>
 
 <script>
 import questionlist from '../../components/question-list/question-list.vue';
+import {SubjectLib} from "../../common/subject-lib";
 export default {
 	//声明组件   实例化组件
 	components:{
@@ -60,121 +60,172 @@ export default {
 			// 小程序特别处理，让导航栏高度 = 胶囊高度 + 两倍胶囊顶部与状态栏底部的距离之差(相当于同时获得了导航栏底部与胶囊底部的距离)
 			// 此方法有缺陷，暂不用(会导致少了几个px)，采用直接固定值的方式
 			// return menuButtonInfo.height + (menuButtonInfo.top - this.statusBarHeight) * 2;//导航高度
-			let height = systemInfo.platform == 'ios' ? 44 : 48;
+			let height = uni.getSystemInfoSync().platform == 'ios' ? 44 : 48;
 			return this.height ? this.height : height;
 			// #endif
 		}
 	},
 	mounted() {
 		this.screenheight = uni.getSystemInfoSync().windowHeight;
+    console.log(this.screenheight, this.navbarHeight);
 		this.getTime();
 	},
-	onLoad() {
-		
-		this.initExam();
+	onLoad(option) {
+		this.initExam(option);
 	},
 	methods: {
-		initExam() {
-			this.answerData = [{
-				'id':100001,//主键
-				'title':"测试单选题哦1",//题目标题
-				'type':1,//题目类型( 1.单选题  2.多选题  3.判断题  4.简答题 )
-				'isCollect':1,//判断是否有收藏
-				'isAnswered':false,//是否作答
-				'rightkey':'A',//正确答案
-				'analysis':'我是题目的解析11111111111',//解析
-				'questionAnswerList':[{//选项列表
-					'id':110001,
-					'answerTitle':'A',//选项标题
-					'content':'content--->AAAAAAAA',//选项内容
-					'isCorrect':1,//是否是正确答案( 1是   2否 )
-					'status':0//选择状态
-				},
-				{
-					'id':110002,
-					'answerTitle':'B',
-					'content':'content--->BBBBBBBB',
-					'isCorrect':2,
-					'status':0
-				},
-				{
-					'id':110003,
-					'answerTitle':'C',
-					'content':'content--->CCCCCCC',
-					'isCorrect':2,
-					'status':0
-				},
-				{
-					'id':110004,
-					'answerTitle':'D',
-					'content':'content--->DDDDDDD',
-					'isCorrect':2,
-					'status':0
-				}]
-			},{
-				'id':100002,
-				'title':"测试多选题哦1",
-				'type':2,
-				'isCollect':0,//判断是否有收藏
-				'isAnswered':false,//是否作答
-				'rightkey':'A,B',
-				'analysis':'我是题目的解析11111111111',
-				'questionAnswerList':[{
-					'id':110001,
-					'answerTitle':'A',
-					'content':'content--->AAAAAAAA',
-					'isCorrect':1,
-					'status':0
-				},
-				{
-					'id':110002,
-					'answerTitle':'B',
-					'content':'content--->BBBBBBBB',
-					'isCorrect':1,
-					'status':0
-				},
-				{
-					'id':110003,
-					'answerTitle':'C',
-					'content':'content--->CCCCCCC',
-					'isCorrect':2,
-					'status':0
-				},
-				{
-					'id':110004,
-					'answerTitle':'D',
-					'content':'content--->DDDDDDD',
-					'isCorrect':2,
-					'status':0
-				}]
-			},{
-				'id':100003,
-				'title':"测试判断题哦2",
-				'type':3,
-				'isCollect':0,//判断是否有收藏
-				'isAnswered':false,//是否作答
-				'rightkey':'A',//判断的正确答案( A正确  B错误 )
-				'analysis':'我是题目的解析11111111111',
-				'questionAnswerList':[{
-					'id':110001,
-					'answerTitle':'A',
-					'isCorrect':1,
-					'status':0
-				},
-				{
-					'id':110001,
-					'answerTitle':'B',
-					'isCorrect':2,
-					'status':0
-				},]
-			},{
-				'id':100004,
-				'title':"简答题哦~",
-				'type':4,
-				'isCollect':0,//判断是否有收藏
-				'isAnswered':false,//是否作答
-				'analysis':'我是题目的解析11111111111',
-			}];
+		initExam(option) {
+      let lib = new SubjectLib();
+      lib.loadSubjectLib(option.type);
+      let subjects = lib.lib;
+      for(let i=0; i< subjects.length; i++){
+        subjects[i].isCollect = 0;
+        for(let j=0; j< subjects[i].options.length; j++) {
+          subjects[i].options[j].status = 0;
+        }
+      }
+      this.answerData = subjects;
+      console.log("*****", );
+      uni.request({
+        url: "https://service-0pbcc59q-1254422925.gz.apigw.tencentcs.com/release/users",
+        method: "GET",
+        success: (res)=> {console.log(res)}
+      })
+      // this.answerData = [
+      //   {
+      //     id: 11,
+      //     title: '1111',
+      //     answer: 'A',
+      //     type: 'single',
+      //     options: [
+      //       {
+      //         key: 'A',
+      //         option: '11111',
+      //         status: 0,
+      //       },
+      //       {
+      //         key: 'B',
+      //         option: '11111',
+      //         status: 0,
+      //       },
+      //                     {
+      //         key: 'C',
+      //         option: '11111',
+      //                       status: 0,
+      //       },
+      //         {
+      //         key: 'D',
+      //         option: '11111',
+      //           status: 0,
+      //       }
+      //     ]
+      //   }
+      // ]
+      // for(let i=0; i< this.answerData.length; i++) {
+      //   for(let j=0; j< this.answerData[i].options.length; j++){
+      //     this.answerData[i].options[j].status = 0;
+      //   }
+      // }
+			// this.answerData = [{
+			// 	'id':100001,//主键
+			// 	'title':"测试单选题哦1",//题目标题
+			// 	'type':1,//题目类型( 1.单选题  2.多选题  3.判断题  4.简答题 )
+			// 	'isCollect':1,//判断是否有收藏
+			// 	'isAnswered':false,//是否作答
+			// 	'rightkey':'A',//正确答案
+			// 	'analysis':'我是题目的解析11111111111',//解析
+			// 	'questionAnswerList':[{//选项列表
+			// 		'id':110001,
+			// 		'answerTitle':'A',//选项标题
+			// 		'content':'content--->AAAAAAAA',//选项内容
+			// 		'isCorrect':1,//是否是正确答案( 1是   2否 )
+			// 		'status':0//选择状态
+			// 	},
+			// 	{
+			// 		'id':110002,
+			// 		'answerTitle':'B',
+			// 		'content':'content--->BBBBBBBB',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110003,
+			// 		'answerTitle':'C',
+			// 		'content':'content--->CCCCCCC',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110004,
+			// 		'answerTitle':'D',
+			// 		'content':'content--->DDDDDDD',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	}]
+			// },{
+			// 	'id':100002,
+			// 	'title':"测试多选题哦1",
+			// 	'type':2,
+			// 	'isCollect':0,//判断是否有收藏
+			// 	'isAnswered':false,//是否作答
+			// 	'rightkey':'A,B',
+			// 	'analysis':'我是题目的解析11111111111',
+			// 	'questionAnswerList':[{
+			// 		'id':110001,
+			// 		'answerTitle':'A',
+			// 		'content':'content--->AAAAAAAA',
+			// 		'isCorrect':1,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110002,
+			// 		'answerTitle':'B',
+			// 		'content':'content--->BBBBBBBB',
+			// 		'isCorrect':1,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110003,
+			// 		'answerTitle':'C',
+			// 		'content':'content--->CCCCCCC',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110004,
+			// 		'answerTitle':'D',
+			// 		'content':'content--->DDDDDDD',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	}]
+			// },{
+			// 	'id':100003,
+			// 	'title':"测试判断题哦2",
+			// 	'type':3,
+			// 	'isCollect':0,//判断是否有收藏
+			// 	'isAnswered':false,//是否作答
+			// 	'rightkey':'A',//判断的正确答案( A正确  B错误 )
+			// 	'analysis':'我是题目的解析11111111111',
+			// 	'questionAnswerList':[{
+			// 		'id':110001,
+			// 		'answerTitle':'A',
+			// 		'isCorrect':1,
+			// 		'status':0
+			// 	},
+			// 	{
+			// 		'id':110001,
+			// 		'answerTitle':'B',
+			// 		'isCorrect':2,
+			// 		'status':0
+			// 	},]
+			// },{
+			// 	'id':100004,
+			// 	'title':"简答题哦~",
+			// 	'type':4,
+			// 	'isCollect':0,//判断是否有收藏
+			// 	'isAnswered':false,//是否作答
+			// 	'analysis':'我是题目的解析11111111111',
+			// }];
 			
 			//this.initExamNumData();
 				

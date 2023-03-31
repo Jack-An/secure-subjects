@@ -22,7 +22,8 @@ class BaseParser:
             "tag": tag,
             "title": title,
             "answer": answer,
-            "options": options
+            "options": options,
+            "type": "single",
         }
         return subject
 
@@ -43,7 +44,8 @@ class BaseParser:
             "tag": tag,
             "title": title,
             "answer": answer,
-            "options": options
+            "options": options,
+            "type": "multiple",
         }
         return subject
 
@@ -63,7 +65,8 @@ class BaseParser:
             "tag": tag,
             "title": title,
             "answer": answer,
-            "options": options
+            "options": options,
+            "type": "judge",
         }
         return subject
 
@@ -135,21 +138,18 @@ class SubjectParser:
             subs = []
             for _sub in sub_subjects:
                 if len(_sub) == 3:
-                    _type = "judge"
                     _sub_subject = BaseParser.judge_parser(_sub)
                 elif len(_sub) == 5:
-                    _type = "single"
                     _sub_subject = BaseParser.single_parser(_sub)
                 else:
-                    _type = "multiple"
                     _sub_subject = BaseParser.multiple_parser(_sub)
-                _sub_subject["type"] = _type
                 subs.append(_sub_subject)
 
             subject = {
                 "title": title,
                 "tag": tag,
                 "subs": subs,
+                "type": "sample"
             }
             subjects.append(subject)
         return subjects
@@ -188,7 +188,6 @@ class SubjectParser:
 
             with open(f'{subject_key}.json', 'w') as f:
                 json.dump(subjects, f)
-
 
 
 if __name__ == '__main__':

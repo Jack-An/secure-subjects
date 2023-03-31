@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="question-list-wrapper">
 		<view class="exam_progress">
 			<view class="slider">
 				<u-slider height="12" inactiveColor="#75BDF8" activeColor="#fff" disabled
@@ -16,32 +16,31 @@
 				<swiper-item v-for="(item, index) in answerData" :key="index">
 					<view class="" style="height: 100%; overflow: scroll;">
 						<view class="subject_title" v-html="showTitleHtml(index + 1, item)">
-							<!-- {{index}}.{{item.title}} -->
 						</view>
 						<view class="answer">
-							<view class="" v-if="item.type == 1">
+							<view class="" v-if="item.type === 'single'">
 								<view :class="[changeAnswer(item2.status)]"
-									v-for="(item2, i2) in item.questionAnswerList" :key="i2" @click="changeOptions(i2)">
-									<view class="order">{{ item2.answerTitle }}.</view>
-									<view class="answer_detail" v-html="item2.content"></view>
+									v-for="(item2, i2) in item.options" :key="i2" @click="changeOptions(i2)">
+									<view class="order">{{ item2.key }}.</view>
+									<view class="answer_detail" v-html="item2.option"></view>
 								</view>
 							</view>
-							<view class="" v-if="item.type == 2">
+							<view class="" v-if="item.type === 'multiple'">
 								<view :class="[changeAnswer(item2.status)]"
-									v-for="(item2, i2) in item.questionAnswerList" :key="i2"
+									v-for="(item2, i2) in item.options" :key="i2"
 									@click="checkboxChangeOptions(i2)">
-									<view class="order">{{ item2.answerTitle }}.</view>
-									<view class="answer_detail" v-html="item2.content"></view>
+									<view class="order">{{ item2.key }}.</view>
+									<view class="answer_detail" v-html="item2.option"></view>
 								</view>
 							</view>
-							<view class="" v-if="item.type == 3">
-								<view :class="[changeAnswer(item2.status)]" v-for="(item2, i2) in item.questionAnswerList"
+							<view class="" v-if="item.type === 'judge'">
+								<view :class="[changeAnswer(item2.status)]" v-for="(item2, i2) in item.options"
 									:key="i2" @click="changeOptions(i2)">
-									<view class="order" style="float: left;">{{ i2 == 0 ? 'A' : 'B' }}.</view>
-									<view class="answer_detail">{{ i2 == 0 ? '正确' : '错误' }}</view>
+									<view class="order" style="float: left;">{{item2.key}}</view>
+									<view class="answer_detail">{{ item2.option }}</view>
 								</view>
 							</view>
-							<textarea v-if="item.type == 4" class="short_answer_questions" v-model="item.myAnswer"
+							<textarea v-if="item.type === 'sample'" class="short_answer_questions" v-model="item.myAnswer"
 								placeholder="请输入答案..." maxlength="-1" @input="handleInput(item)" />
 						</view>
 					</view>
@@ -303,22 +302,18 @@
 			},
 			//单选题选择答案改变样式
 			changeOptions(index) {
-				console.log(">>>>>",index);
 				let answerObj = this.answerData[this.exampagenum];
-				for (let i = 0; i < answerObj.questionAnswerList.length; i++) {
-					this.answerData[this.exampagenum].questionAnswerList[i].status = 0;
+				for (let i = 0; i < answerObj.options.length; i++) {
+					this.answerData[this.exampagenum].options[i].status = 0;
 				}
-				this.answerData[this.exampagenum].questionAnswerList[index].status = 1;
+				this.answerData[this.exampagenum].options[index].status = 1;
 				this.answerData[this.exampagenum].isAnswered = true; //添加当前题目是否已答题
-				this.answerData[this.exampagenum].myAnswer = answerObj.questionAnswerList[index].answerTitle;
-				if (this.answerData[this.exampagenum].myAnswer == this.answerData[this.exampagenum].rightkey) {
+				this.answerData[this.exampagenum].myAnswer = answerObj.options[index].key;
+				if (this.answerData[this.exampagenum].myAnswer === this.answerData[this.exampagenum].answer) {
 					this.answerData[this.exampagenum].isRight = 1;
 				} else {
 					this.answerData[this.exampagenum].isRight = 2;
 				}
-				// let obj={
-				// 	'answerData':
-				// }
 				let obj={
 					'answerData':this.answerData[this.exampagenum],
 					'indexs':this.exampagenum
@@ -327,24 +322,20 @@
 			},
 			//多选
 			checkboxChangeOptions: function(index) {
-				let answerObj = this.answerData[this.exampagenum];
-				if (this.answerData[this.exampagenum].questionAnswerList[index].status == 1) {
-					this.answerData[this.exampagenum].questionAnswerList[index].status = 0;
+				// let answerObj = this.answerData[this.exampagenum];
+				if (this.answerData[this.exampagenum].options[index].status === 1) {
+					this.answerData[this.exampagenum].options[index].status = 0;
 				} else {
-					this.answerData[this.exampagenum].questionAnswerList[index].status = 1;
+					this.answerData[this.exampagenum].options[index].status = 1;
 				}
 				//正确答案集合
-				let checkboxAnswerArr = this.answerData[this.exampagenum].rightkey.split(',');
-				let myAnswer = '';
+				// let checkboxAnswerArr = this.answerData[this.exampagenum].answer;
+				let myAnswer = [];
 				let checkNum = 0; //多选题已经选择的答案数量
-				for (var i = 0; i < this.answerData[this.exampagenum].questionAnswerList.length; i++) {
-					if (this.answerData[this.exampagenum].questionAnswerList[i].status == 1) {
-						checkNum++;
-						if (myAnswer) {
-							myAnswer += ',' + this.answerData[this.exampagenum].questionAnswerList[i].answerTitle;
-						} else {
-							myAnswer = this.answerData[this.exampagenum].questionAnswerList[i].answerTitle;
-						}
+				for (let i = 0; i < this.answerData[this.exampagenum].options.length; i++) {
+					if (this.answerData[this.exampagenum].options[i].status === 1) {
+						myAnswer.push(this.answerData[this.exampagenum].options[i].key)
+            checkNum ++;
 					}
 				}
 				if (checkNum > 0) {
@@ -353,7 +344,7 @@
 					this.answerData[this.exampagenum].isAnswered = false;
 				}
 				this.answerData[this.exampagenum].myAnswer = myAnswer;
-				if (this.answerData[this.exampagenum].myAnswer == this.answerData[this.exampagenum].rightkey) {
+				if (this.answerData[this.exampagenum].myAnswer === this.answerData[this.exampagenum].answer) {
 					this.answerData[this.exampagenum].isRight = 1;
 				} else {
 					this.answerData[this.exampagenum].isRight = 2;
@@ -414,11 +405,11 @@
 				this.isQuestionCollect(index-1);
 			},
 			isQuestionCollect(index){
-				if (this.answerData[index].isCollect > 0) {
-					this.collect = true;
-				} else {
-					this.collect = false;
-				}
+				// if (this.answerData[index].isCollect > 0) {
+				// 	this.collect = true;
+				// } else {
+				// 	this.collect = false;
+				// }
 			},
 			//答题卡显示
 			cardShow() {
@@ -474,6 +465,9 @@
 </script>
 
 <style lang="scss">
+.question-list-wrapper {
+  height: 90%;
+}
 
 
 .hide_answercard {
@@ -703,6 +697,7 @@
 				border: 4rpx solid #f0f5fb;
 				margin-top: 30rpx;
 				display: flex;
+        border-radius: 10rpx;
 
 				.answer_detail {
 					padding-left: 20rpx;
@@ -713,7 +708,9 @@
 			.answer_options_active {
 				width: 100%;
 				padding: 10rpx 20rpx 10rpx 20rpx;
-				background: #ffffff;
+        border-radius: 10rpx;
+				background: #0e8afd;
+        color: #fff;
 				border: 4rpx solid #0e8afd;
 				margin-top: 30rpx;
 				display: flex;
@@ -725,6 +722,7 @@
 			}
 			.answer_options_error {
 				width: 100%;
+        border-radius: 10rpx;
 				padding: 10rpx 20rpx 10rpx 20rpx;
 				background: #ffffff;
 				border: 4rpx solid #eb0003;

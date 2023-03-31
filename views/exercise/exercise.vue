@@ -1,7 +1,7 @@
 <!-- 在线练习页面 -->
 <template>
 	<view class="page_big" :style="{height:screenheight+'px'}">
-		<u-navbar title="在线练习" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
+		<u-navbar title="模拟考试" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
 			titleColor="#ffffff" :borderBottom="false" backIconColor="#ffffff" titleBold>
 		</u-navbar>
 		<view class="exam_progress">

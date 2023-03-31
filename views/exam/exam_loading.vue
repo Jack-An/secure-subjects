@@ -1,32 +1,23 @@
 <!-- 考试加载页 -->
 <template>
 	<view class="page_big" :style="{height:screenheight+'px'}">
-		<u-navbar title="模拟考试" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
+		<u-navbar title="专项练习" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
 			titleColor="#ffffff" :borderBottom="false" backIconColor="#ffffff" titleBold>
 		</u-navbar>
 		<view class="page_content">
 			<view class="exam_title">
-				{{examInfo.exam_title}}
+				{{lib.title}}
 			</view>
 			<view class="exam_bg">
 				<image src="../../static/exam_bg.png" mode=""></image>
 			</view>
 			<view class="start_answer" @click="runExam()">
-				开始答题
+				开始练习
 			</view>
 			<view class="exam_detail">
 				<view class="question_num">
-					共<text>{{examInfo.examNum}}</text>道题
+					共<text>{{lib.num}}</text>道题
 				</view>
-				<view class="exam_score">
-					<text>{{examInfo.qualified}}</text>分及格(满分<text>{{examInfo.score}}</text>分)
-				</view>
-				<view class="exam_time">
-					{{examInfo.examTime}}分钟
-				</view>
-			</view>
-			<view class="rules">
-				{{examInfo.rule}}
 			</view>
 		</view>
 	</view>
@@ -42,29 +33,26 @@
 				top_bgCl: {
 					background: "#0E8AFD"
 				},
-				examInfo:{}
+				lib:{}
 			};
 		},
 		mounted() {
 			this.screenheight = uni.getSystemInfoSync().windowHeight
 		},
 		onLoad(option) {
-			this.initExamInfo();
+			this.initExamInfo(option);
 		},
 		methods: {
 			//跳转考试页
 			runExam(){
 				uni.navigateTo({
-					url:'/pages/exam/exam'
+					url:`/views/exam/exam?type=${this.lib.type}`
 				})
 			},
-			initExamInfo:function(){
-				this.examInfo.exam_title="我是试卷一哦";
-				this.examInfo.examNum=50;
-				this.examInfo.qualified=60;
-				this.examInfo.score=100;
-				this.examInfo.examTime=60;
-				this.examInfo.rule="每道题两分，答对得两分，不答和答错不得分。";
+			initExamInfo:function(option){
+        this.lib.type = option.type;
+        this.lib.num = option.num;
+        this.lib.title = option.title;
 			}
 		}
 	}

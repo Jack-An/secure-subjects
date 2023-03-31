@@ -1,7 +1,7 @@
 <!-- 考试列表页 -->
 <template>
 	<view class="page_big" :style="{height:screenheight+'px'}">
-		<u-navbar title="考卷列表" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
+		<u-navbar title="题目类型" safeAreaInsetTop fixed placeholder :autoBack="true" :background="top_bgCl"
 			titleColor="#333333" :borderBottom="false" backIconColor="#333333" titleBold>
 		</u-navbar>
 		<view class="page_content">
@@ -40,15 +40,23 @@
 				img:"../../static/exam_bg.png",
 				//题目列表数据
 				examList:[{
-					'subjectType':"单选题",
-					'questionNum':10,
+					subjectType:"单选题",
+          type: 'single',
+					questionNum:10,
 				},{
-					'subjectType':"多选题",
-					'questionNum':15,
+					subjectType:"多选题",
+          type: 'multiple',
+					questionNum:15,
 				},
           {
-            "subjectType": "案例题",
-            "questionNum": 10
+					subjectType:"判断题",
+            type: 'judge',
+					questionNum:15,
+				},
+          {
+            subjectType: "案例题",
+            type: 'sample',
+            questionNum: 10
           }],
 			}			
 		},
@@ -63,14 +71,14 @@
 			//调转考试加载页
 			runExam(item){
 				uni.navigateTo({
-					url:'/pages/exam/exam_loading'
+					url:`/views/exam/exam_loading?type=${item.type}&num=${item.questionNum}&title=${item.subjectType}`
 				})
 			},
-			runExamReview(item){
-				uni.navigateTo({
-					url:'/pages/result/exam_review'
-				})
-			},
+			// runExamReview(item){
+			// 	uni.navigateTo({
+			// 		url:'/views/result/exam_review'
+			// 	})
+			// },
 			init: function(questionbankId,userid){
 				
 			}

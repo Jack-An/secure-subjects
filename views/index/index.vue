@@ -10,7 +10,7 @@
 		</u-navbar>
 		<view class="page_content">
 			<view class="modular">
-        <view class="modular_item" @click="runExam">
+        <view class="modular_item" @click="runSequenceExam">
 					<image src="../../static/examination_paper.png" mode=""></image>
 					<text>顺序练习</text>
 				</view>
@@ -158,7 +158,7 @@
 			},
 
 			//跳转模拟考卷列表
-			runExam() {
+			runSequenceExam() {
 				uni.navigateTo({
 					url: "../exam/exam_list"
 				})

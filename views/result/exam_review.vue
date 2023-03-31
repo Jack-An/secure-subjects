@@ -1037,7 +1037,9 @@
 				.answer_options_active {
 					width: 100%;
 					padding: 10rpx 20rpx 10rpx 20rpx;
-					background: #FFFFFF;
+					background: #0E8AFD;
+          color: #fff;
+          border-radius: 10rpx;
 					border: 4rpx solid #0E8AFD;
 					margin-top: 30rpx;
 					display: flex;
