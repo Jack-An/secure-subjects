@@ -25,7 +25,7 @@
 			</view>
 			<view class="history_results">
 				<view class="history_title">
-					历史成绩
+					模拟考试历史
 				</view>
 				<view class="history_detail">
 					<view class="history_detail_item" v-for="(item,i) in history" :key="i">

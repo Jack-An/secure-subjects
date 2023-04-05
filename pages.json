@@ -39,13 +39,6 @@
       }
     },
     {
-      "path": "views/exam/exam_loading",
-      "style": {
-        "navigationBarTitleText": "",
-        "enablePullDownRefresh": false
-      }
-    },
-    {
       "path": "views/exam/exam",
       "style": {
         "navigationBarTitleText": "",

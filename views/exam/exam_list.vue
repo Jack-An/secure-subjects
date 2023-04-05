@@ -71,7 +71,7 @@
 			//调转考试加载页
 			runExam(item){
 				uni.navigateTo({
-					url:`/views/exam/exam_loading?type=${item.type}&num=${item.questionNum}&title=${item.subjectType}`
+					url:`/views/exam/exam?type=${item.type}&num=${item.questionNum}&title=${item.subjectType}`
 				})
 			},
 			// runExamReview(item){
